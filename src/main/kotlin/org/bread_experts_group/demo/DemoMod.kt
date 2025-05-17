@@ -1,7 +1,9 @@
 package org.bread_experts_group.demo
 
 import org.bread_experts_group.common.Mod
+import org.bread_experts_group.common.registrar.BlockRegistrar
 import org.bread_experts_group.common.registrar.ItemRegistrar
+import org.bread_experts_group.common.world.Block
 import org.bread_experts_group.common.world.Item
 
 class DemoMod : Mod(
@@ -14,14 +16,14 @@ class DemoMod : Mod(
 		val exampleItem = this.push("test", Item())
 		val exampleItem2 = this.push("test2", Item())
 	}
+	inner class ModBlockDefinitions : BlockRegistrar(this@DemoMod) {
+		val exampleBlock = this.push("test", Block())
+		val exampleBlock2 = this.push("test2", Block())
+	}
 	val items = ModItemDefinitions()
+	val blocks = ModBlockDefinitions()
 
 	init {
 		logger.info("Demo mod loaded")
-		logger.info("${items.exampleItem}")
-		logger.info("${items.exampleItem2}")
-		items.forEach {
-			logger.info(it.toString())
-		}
 	}
 }

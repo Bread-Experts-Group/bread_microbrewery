@@ -1,0 +1,92 @@
+internal fun registerAllRegistrars(registry: Any) {
+    registrationFrozen = true
+    val registryClass = registry::class.java.classLoader.loadClass("net.minecraft.core.Registry")
+    val registerIntoRegistry = registryClass.getMethod(
+        "register", registryClass, String::class.java, Object::class.java
+    )
+    val resourceKeyName = "net.minecraft.resources.ResourceKey"
+    val resourceKeyDesc = ClassDesc.of(resourceKeyName)
+    val resourceKeyClass = registry::class.java.classLoader.loadClass(resourceKeyName)
+    val resourceLocationName = "net.minecraft.resources.ResourceLocation"
+    val resourceLocationDesc = ClassDesc.of(resourceLocationName)
+    val register = registry::class.java.getMethod(
+        "register",
+        resourceKeyClass,
+        Object::class.java,
+        registry::class.java.classLoader.loadClass("net.minecraft.core.RegistrationInfo")
+    )
+    val registrationInfoBuiltIn = registry::class.java.classLoader.loadClass("net.minecraft.core.RegistrationInfo")
+        .getField("BUILT_IN")
+        .get(null)
+    val lifecycleName = "com.mojang.serialization.Lifecycle"
+    val lifecycleDesc = ClassDesc.of(lifecycleName)
+    registry::class.java.getMethod("unfreeze").invoke(registry)
+    allRegistrars.forEach { (mod, registrars) ->
+        registrars.forEach { registrar ->
+            registrar.freeze()
+//					val newClassName = ClassDesc.of("net.minecraft.core.RuntimeRegistry\$NeoForge$${mod.identifier}$${registrar.name}")
+//					val mappedRegistry = ClassDesc.of("net.minecraft.core.MappedRegistry")
+//					val registered = ClassFile.of().build(newClassName) {
+//						it.withSuperclass(mappedRegistry)
+//						it.withMethodBody(
+//							"<init>",
+//							MethodTypeDesc.ofDescriptor("()V"),
+//							0x1001 // Synth, Public
+//						) { builder ->
+//							builder.aload(0) // T
+//							builder.pushString("${mod.identifier}:${registrar.name}") // T S
+//							builder.invokestatic(
+//								resourceLocationDesc,
+//								"parse",
+//								MethodTypeDesc.of(resourceLocationDesc, javaString)
+//							) // T R
+//							builder.invokestatic(
+//								resourceKeyDesc,
+//								"createRegistryKey",
+//								MethodTypeDesc.of(resourceKeyDesc, resourceLocationDesc)
+//							) // T K
+//							builder.invokestatic(
+//								lifecycleDesc,
+//								"stable",
+//								MethodTypeDesc.of(lifecycleDesc)
+//							) // T K L
+//							builder.iconst_1() // T K L B
+//							builder.invokespecial(
+//								mappedRegistry,
+//								"<init>",
+//								MethodTypeDesc.of(
+//									ClassDesc.ofDescriptor("V"),
+//									resourceKeyDesc,
+//									ClassDesc.of(lifecycleName),
+//									ClassDesc.ofDescriptor("Z")
+//								)
+//							) // .
+//							builder.return_() // .
+//						}
+//					}.let {
+//						MethodHandles.privateLookupIn(
+//							registry::class.java,
+//							MethodHandles.lookup()
+//						).defineClass(it)
+//					}
+//					logger.info("Registered [BaseMappedRegistry] translator at [$registered]")
+//					val newRegistry = registered.getDeclaredConstructor().newInstance()
+            registrar.forEach { (id, item) ->
+                registerIntoRegistry.invoke(
+                    null,
+                    registry::class.java.classLoader.loadClass("net.minecraft.core.registries.BuiltInRegistries").getField("ITEM").get(null), "${mod.identifier}:$id",
+                    registrar.getRealClassForObject(registry::class.java.classLoader, item)
+                )
+            }
+//					logger.info("New registry [$newRegistry]")
+//					register.invoke(
+//						registry,
+//						newRegistry::class.java.getMethod("key").invoke(newRegistry),
+//						newRegistry,
+//						registrationInfoBuiltIn
+//					)
+        }
+    }
+    registry::class.java.getMethod("freeze").invoke(registry)
+    allRegistrars.clear()
+}
