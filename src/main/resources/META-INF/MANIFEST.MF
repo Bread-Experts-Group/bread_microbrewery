@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Main-Class: org.bread_experts_group.MicrobreweryAgentMainKt
+Premain-Class: org.bread_experts_group.MicrobreweryAgentPremain
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true

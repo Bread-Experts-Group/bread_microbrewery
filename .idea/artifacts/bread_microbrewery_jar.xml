@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="bread_microbrewery:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/bread_microbrewery</output-path>
+    <root id="archive" name="bread_microbrewery.jar">
+      <element id="module-output" name="bread_microbrewery.main" />
+      <element id="library" level="project" name="classes.3" />
+      <element id="library" level="project" name="classes.2" />
+      <element id="library" level="project" name="classes" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.1.20/aa8ca79cd50578314f6d1180c47cbe14c0fee567/kotlin-stdlib-2.1.20.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
