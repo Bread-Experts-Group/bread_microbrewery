@@ -43,7 +43,7 @@ sealed class Registrar<T>(owner: Mod, private val registryField: String) : Map<S
 		private val allRegistrars = ConcurrentHashMap<Mod, ConcurrentLinkedQueue<Registrar<*>>>()
 		internal fun pushRegistrar(owner: Mod, registrar: Registrar<*>) {
 			if (registrationFrozen) throw IllegalStateException("Registrars already submitted")
-			allRegistrars.getOrPut(owner, { ConcurrentLinkedQueue() }).add(registrar)
+			allRegistrars.getOrPut(owner) { ConcurrentLinkedQueue() }.add(registrar)
 		}
 
 		@JvmStatic
