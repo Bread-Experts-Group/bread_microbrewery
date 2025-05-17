@@ -2,6 +2,7 @@ package org.bread_experts_group
 
 import org.bread_experts_group.common.Mod
 import org.bread_experts_group.common.ModFactory
+import org.bread_experts_group.internal.minecraft.BuiltInRegistriesTransformers
 import org.bread_experts_group.internal.neoforge.BootstrapLauncherTransformers
 import org.bread_experts_group.internal.neoforge.FMLModContainerTransformers
 import org.bread_experts_group.internal.neoforge.ModListScreenTransformers
@@ -12,6 +13,7 @@ import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation
 import java.security.ProtectionDomain
 import java.util.ServiceLoader
+import java.util.concurrent.CountDownLatch
 import java.util.function.Function
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -41,6 +43,7 @@ object MicrobreweryAgentPremain {
 		ColoredLogger.coloring = false
 		common()
 		val classContext = ClassFile.of()
+		val waitingForMods = CountDownLatch(1)
 		instrumentation.addTransformer(object : ClassFileTransformer {
 			override fun transform(
 				loader: ClassLoader?,
@@ -57,11 +60,13 @@ object MicrobreweryAgentPremain {
 					"net/neoforged/fml/ModLoader" -> ModLoaderTransformers.gatherAndInitializeModsTransform
 					"net/neoforged/fml/javafmlmod/FMLModContainer" -> FMLModContainerTransformers.initTransform
 					"net/neoforged/neoforge/client/gui/ModListScreen" -> ModListScreenTransformers.updateCacheTransform
+					"net/minecraft/core/registries/BuiltInRegistries" -> BuiltInRegistriesTransformers.clinitTransform
 					else -> return null
 				} else return null
 
 				val parsed = classContext.parse(classfileBuffer)
 				val transformed = try {
+					waitingForMods.await()
 					classContext.transformClass(
 						parsed,
 						transformer
@@ -92,5 +97,6 @@ object MicrobreweryAgentPremain {
 				Function.identity())
 			)
 		microbreweryPrimaryLogger.info { "Mod initialization: [${mods.size}] mods initialized [${System.nanoTime() - modInitStart} ns]" }
+		waitingForMods.countDown()
 	}
 }
