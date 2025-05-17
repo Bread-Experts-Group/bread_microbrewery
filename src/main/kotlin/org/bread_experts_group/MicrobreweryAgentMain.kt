@@ -12,8 +12,10 @@ import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation
 import java.security.ProtectionDomain
 import java.util.ServiceLoader
+import java.util.function.Function
 import java.util.logging.Level
 import java.util.logging.Logger
+import java.util.stream.Collectors
 
 val microbreweryPrimaryLogger: Logger = ColoredLogger.newLogger("Bread Experts Group Microbrewery")
 
@@ -72,17 +74,23 @@ object MicrobreweryAgentPremain {
 				return transformed
 			}
 		}, true)
-		microbreweryPrimaryLogger.info("Initializing mods ...")
-		val mutableMods = mods as MutableMap<String, Mod>
-		ServiceLoader.load(ModFactory::class.java).forEach {
-			Thread.ofVirtual().run {
-				it.createMods().forEach { mod ->
-					if (mod.identifier in mutableMods)
-						throw UnsupportedOperationException("Duplicate mod identifier.")
-					synchronized(mutableMods) { mutableMods[mod.identifier] = mod }
-				}
+		val modInitStart = System.nanoTime()
+		mods = ServiceLoader.load(ModFactory::class.java)
+			.toList()
+			.also { microbreweryPrimaryLogger.info { "Mod initialization: [${it.size}] factories" } }
+			.parallelStream()
+			.map { factory ->
+				factory
+					.createMods()
+					.also { microbreweryPrimaryLogger.info { "Factory [${factory::class.simpleName}] initialization: [${it.size}] mods" } }
+					.parallelStream()
+					.map { it.join() }
 			}
-		}
-		mods = mutableMods.toMap()
+			.flatMap(Function.identity())
+			.collect(Collectors.toUnmodifiableMap(
+				{ it.identifier },
+				Function.identity())
+			)
+		microbreweryPrimaryLogger.info { "Mod initialization: [${mods.size}] mods initialized [${System.nanoTime() - modInitStart} ns]" }
 	}
 }

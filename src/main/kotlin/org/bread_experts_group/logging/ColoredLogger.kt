@@ -89,15 +89,10 @@ object ColoredLogger : Handler() {
 					record.thrown.stackTrace.forEach {
 						if (it.className.length > classNamePad) classNamePad = it.className.length
 						if (it.methodName.length > methodNamePad) methodNamePad = it.methodName.length
-						var calculatedModuleLength = 4
-						if (it.moduleName != null) {
-							if (it.moduleName.length > moduleNamePad) moduleNamePad = it.moduleName.length
-							calculatedModuleLength += it.moduleName.length
-						}
-						if (it.moduleVersion != null) {
-							if (it.moduleVersion.length > moduleVersionPad) moduleVersionPad = it.moduleVersion.length
-							calculatedModuleLength += it.moduleVersion.length
-						}
+						if (it.moduleName != null && it.moduleName.length > moduleNamePad)
+							moduleNamePad = it.moduleName.length
+						if (it.moduleVersion != null && it.moduleVersion.length > moduleVersionPad)
+							moduleVersionPad = it.moduleVersion.length
 						val fileName = it.fileName
 						if (fileName != null && fileName.length > filePad) filePad = fileName.length
 						val classLoaderName = it.classLoaderName
@@ -141,7 +136,7 @@ object ColoredLogger : Handler() {
 	}
 
 	override fun flush() {
-		while (writeback.isNotEmpty()) println(writeback.remove())
+		while (writeback.isNotEmpty()) writeback.poll()?.also { println(it) }
 	}
 
 	override fun close() {
@@ -149,7 +144,7 @@ object ColoredLogger : Handler() {
 		this.flush()
 	}
 
-	fun newLogger(name: String) = Logger.getLogger(name).also {
+	fun newLogger(name: String): Logger = Logger.getLogger(name).also {
 		it.useParentHandlers = false
 		it.addHandler(this)
 	}
