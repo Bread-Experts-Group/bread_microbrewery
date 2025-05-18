@@ -1,38 +1,46 @@
 package org.bread_experts_group.common.registrar
 
+import org.bread_experts_group.common.Convertible
 import org.bread_experts_group.common.Mod
 import org.bread_experts_group.logging.ColoredLogger
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
-sealed class Registrar<T>(owner: Mod, private val registryField: String) : Map<String, T> {
-	protected val internalRegistrar = ConcurrentHashMap<String, T>()
+sealed class Registrar<T: Convertible>(
+	val owner: Mod,
+	private val registryField: String
+) : Map<ResourceLocation, RegisteredObject<T>> {
+	protected val internalRegistrar = ConcurrentHashMap<ResourceLocation, RegisteredObject<T>>()
 
 	override val size: Int
 		get() = internalRegistrar.size
-	override val entries: Set<Map.Entry<String, T>>
+	override val entries: Set<Map.Entry<ResourceLocation, RegisteredObject<T>>>
 		get() = internalRegistrar.entries
-	override val keys: Set<String>
+	override val keys: Set<ResourceLocation>
 		get() = internalRegistrar.keys
-	override val values: Collection<T>
+	override val values: Collection<RegisteredObject<T>>
 		get() = internalRegistrar.values
 
 	override fun isEmpty(): Boolean = internalRegistrar.isEmpty()
-	override fun containsKey(key: String): Boolean = internalRegistrar.containsKey(key)
-	override fun containsValue(value: T): Boolean = internalRegistrar.containsValue(value)
-	override fun get(key: String): T? = internalRegistrar[key]
+	override fun containsKey(key: ResourceLocation): Boolean = internalRegistrar.containsKey(key)
+	override fun containsValue(value: RegisteredObject<T>): Boolean = internalRegistrar.containsValue(value)
+	override fun get(key: ResourceLocation): RegisteredObject<T>? = internalRegistrar[key]
 
 	private var frozen: Boolean = false
 	private fun freeze() { this.frozen = true }
-	protected abstract fun getRealClassForObject(cl: ClassLoader, i: Any?): Any
 
-	protected fun push(id: String, i: T): T {
+	fun push(id: String, i: T): RegisteredObject<T> {
 		if (frozen)
 			throw IllegalStateException("Registrar already frozen")
-		if (internalRegistrar.contains(i) || internalRegistrar.containsKey(id))
+		val location = ResourceLocation(owner.identifier, id)
+		if (internalRegistrar.contains(i) || internalRegistrar.containsKey(location))
 			throw UnsupportedOperationException("The internal registrar already contains [$id] / [$i]")
-		internalRegistrar[id] = i
-		return i
+		val registeredObject = RegisteredObject(
+			i,
+			ResourceLocation(owner.identifier, id)
+		)
+		internalRegistrar[location] = registeredObject
+		return registeredObject
 	}
 
 	init { pushRegistrar(owner, this) }
@@ -60,11 +68,11 @@ sealed class Registrar<T>(owner: Mod, private val registryField: String) : Map<S
 				registrars.forEach { registrar ->
 					registrar.freeze()
 					logger.info("Registering [${mod.identifier}:${registrar.registryField}] [${registrar.size} entries]")
-					registrar.forEach { (id, item) ->
+					registrar.forEach { (id, registeredItem) ->
 						registerIntoRegistry.invoke(
 							null,
-							builtInRegistries.getField(registrar.registryField).get(null), "${mod.identifier}:$id",
-							registrar.getRealClassForObject(registry::class.java.classLoader, item)
+							builtInRegistries.getField(registrar.registryField).get(null), id.fullPath,
+							registeredItem.item.getRealObject(registry::class.java.classLoader)
 						)
 					}
 				}

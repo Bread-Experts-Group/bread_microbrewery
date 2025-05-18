@@ -13,14 +13,13 @@ class DemoMod : Mod(
 	"Demonstration mod for the BreadExpertsGroup microbrewery loader with interop"
 ) {
 	inner class ModItemDefinitions : ItemRegistrar(this@DemoMod) {
-		val exampleItem = this.push("test", Item())
-		val exampleItem2 = this.push("test2", Item())
-	}
-	inner class ModBlockDefinitions : BlockRegistrar(this@DemoMod) {
-		val exampleBlock = this.push("test", Block())
-		val exampleBlock2 = this.push("test2", Block())
+		val exampleItem = this.push("test_item", Item())
 	}
 	val items = ModItemDefinitions()
+	inner class ModBlockDefinitions : BlockRegistrar(this@DemoMod) {
+		val exampleBlock = this.push("test_block_noitem", Block())
+		val exampleBlockWithItem = this.pushWithItem("test_block", Block(), items)
+	}
 	val blocks = ModBlockDefinitions()
 
 	init {
