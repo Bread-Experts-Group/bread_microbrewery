@@ -39,9 +39,23 @@ object MicrobreweryAgentPremain {
 		private set
 
 	@JvmStatic
+	@Suppress("unused")
 	fun premain(agentArgs: String?, instrumentation: Instrumentation) {
 		ColoredLogger.coloring = false
 		common()
+
+		// TODO! Mappings
+//		val localExecutionFile = File(this::class.java.protectionDomain.codeSource.location.path).toPath()
+//		if (localExecutionFile.isRegularFile() && localExecutionFile.extension == "jar") {
+//			microbreweryPrimaryLogger.info("Local JAR modification will occur at file [$localExecutionFile]")
+//		} else if (localExecutionFile.isDirectory()) {
+//			microbreweryPrimaryLogger.info("Local JAR modification will occur at directory [$localExecutionFile]")
+//		}
+
+//		val client = HttpClient.newHttpClient()
+//		val versionManifest = MinecraftVersionManifest.read(client).versions.first { it.id == "1.21.1" }
+//		microbreweryPrimaryLogger.info(MinecraftVersionDescriptor.read(client, versionManifest.url).downloadLocations.getValue("client_mappings").url.toString())
+
 		val classContext = ClassFile.of()
 		val waitingForMods = CountDownLatch(1)
 		instrumentation.addTransformer(object : ClassFileTransformer {
