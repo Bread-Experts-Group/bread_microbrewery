@@ -1,8 +1,8 @@
 package org.bread_experts_group.microbrewery.common.registrar
 
+import org.bread_experts_group.logging.ColoredLogger
 import org.bread_experts_group.microbrewery.common.Convertible
 import org.bread_experts_group.microbrewery.common.Mod
-import org.bread_experts_group.microbrewery.logging.ColoredLogger
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 

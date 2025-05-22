@@ -1,6 +1,6 @@
 package org.bread_experts_group.microbrewery.internal.neoforge
 
-import org.bread_experts_group.microbrewery.logging.ColoredLogger
+import org.bread_experts_group.logging.ColoredLogger
 import java.lang.classfile.ClassTransform
 import java.lang.classfile.Label
 import java.lang.classfile.instruction.LineNumber

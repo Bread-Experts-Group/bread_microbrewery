@@ -1,5 +1,6 @@
 package org.bread_experts_group.microbrewery.internal.neoforge
 
+import org.bread_experts_group.logging.ColoredLogger
 import org.bread_experts_group.microbrewery.internal.javaCollection
 import org.bread_experts_group.microbrewery.internal.javaList
 import org.bread_experts_group.microbrewery.internal.javaMap
@@ -9,7 +10,6 @@ import org.bread_experts_group.microbrewery.internal.moduleLayer
 import org.bread_experts_group.microbrewery.internal.mutableList
 import org.bread_experts_group.microbrewery.internal.pushMutableList
 import org.bread_experts_group.microbrewery.internal.pushString
-import org.bread_experts_group.microbrewery.logging.ColoredLogger
 import java.lang.classfile.ClassTransform
 import java.lang.classfile.CodeBuilder
 import java.lang.classfile.Opcode

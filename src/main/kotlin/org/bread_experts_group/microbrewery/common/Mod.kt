@@ -1,6 +1,6 @@
 package org.bread_experts_group.microbrewery.common
 
-import org.bread_experts_group.microbrewery.logging.ColoredLogger
+import org.bread_experts_group.logging.ColoredLogger
 import java.util.logging.Logger
 
 abstract class Mod(

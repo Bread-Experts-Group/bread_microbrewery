@@ -1,9 +1,9 @@
 package org.bread_experts_group.microbrewery.mappings
 
-import org.bread_experts_group.coder.json.JSONArray
-import org.bread_experts_group.coder.json.JSONElement.Companion.json
-import org.bread_experts_group.coder.json.JSONObject
-import org.bread_experts_group.coder.json.JSONString
+import org.bread_experts_group.coder.fixed.json.JSONArray
+import org.bread_experts_group.coder.fixed.json.JSONElement.Companion.json
+import org.bread_experts_group.coder.fixed.json.JSONObject
+import org.bread_experts_group.coder.fixed.json.JSONString
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

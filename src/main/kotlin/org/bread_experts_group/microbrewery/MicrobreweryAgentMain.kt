@@ -1,5 +1,6 @@
 package org.bread_experts_group.microbrewery
 
+import org.bread_experts_group.logging.ColoredLogger
 import org.bread_experts_group.microbrewery.common.Mod
 import org.bread_experts_group.microbrewery.common.ModFactory
 import org.bread_experts_group.microbrewery.internal.minecraft.BuiltInRegistriesTransformers
@@ -7,7 +8,6 @@ import org.bread_experts_group.microbrewery.internal.neoforge.BootstrapLauncherT
 import org.bread_experts_group.microbrewery.internal.neoforge.FMLModContainerTransformers
 import org.bread_experts_group.microbrewery.internal.neoforge.ModListScreenTransformers
 import org.bread_experts_group.microbrewery.internal.neoforge.ModLoaderTransformers
-import org.bread_experts_group.microbrewery.logging.ColoredLogger
 import java.lang.classfile.ClassFile
 import java.lang.instrument.ClassFileTransformer
 import java.lang.instrument.Instrumentation
